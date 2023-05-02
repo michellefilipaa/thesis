@@ -53,3 +53,12 @@ class DifferentialGame:
             check_roots.append(definitely((value_p0 < zero) & (value_p1 < zero)))
 
         return check_roots
+
+    @staticmethod
+    def payoff_at_max(payoffs, check_roots, roots):
+        payoff_values = []
+        for i in range(len(check_roots)):
+            if check_roots[i] is True:
+                payoff_values.append(payoffs(roots[i]))
+
+        return payoff_values
