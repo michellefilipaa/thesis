@@ -17,7 +17,8 @@ class DifferentialGame:
     |p1_deriv: the derivative of the payoff with respect to player 2
     |Returns -> the roots found which are potential Nash equilibria
     """
-    def find_roots(self, solver, payoffs, lower_bound=-1, upper_bound=1):
+    @staticmethod
+    def find_roots(solver, payoffs, lower_bound=-1, upper_bound=1):
         p0_deriv = derivative(payoffs[0], 0)
         p1_deriv = derivative(payoffs[1], 1)
         g = join(p0_deriv, p1_deriv)
@@ -25,9 +26,6 @@ class DifferentialGame:
         interval = IntervalDomainType([pr_(lower_bound), pr_(upper_bound)])
         region = BoxDomainType([interval, interval])
 
-        # PC: You need "region" to have one interval component for each player's strategy.
-        print("g:", g)
-        # print("region:", region)
         roots = solver.solve_all(g, region)
 
         return roots
@@ -37,7 +35,8 @@ class DifferentialGame:
     |If so, then it is a local maximum. If not, then it is either an arbitrary stationary point or a local minimum.
     |Return: True if both points are local maxima, False if not.
     """
-    def test_local_max(self, payoffs, roots):
+    @staticmethod
+    def test_local_max(payoffs, roots):
         check_roots = []
         for root in roots:
             # p0_2nd_deriv = second_derivative(payoffs[0], 0)

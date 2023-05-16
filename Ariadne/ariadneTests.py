@@ -29,7 +29,8 @@ max_steps = 32
 lower_bound = 0.0
 upper_bound = 6.0
 
-g = make_function([x, y], [2*x - 1, 3*y - 1])  # why is there a comma in the middle of the function? What does that mean
+g = make_function([x, y],
+                  [2 * x - 1, 3 * y - 1])  # why is there a comma in the middle of the function? What does that mean
 # PC: You need "region" to have one interval component for each player's strategy.
 # interval = IntervalDomainType([pr_(lower_bound), pr_(upper_bound)])  # PC
 interval = IntervalDomainType([0, 6])  # PC
@@ -39,7 +40,6 @@ print("g:", g)
 print("region:", region)
 p = solver.solve(g, region)
 print('Roots=', type(p))
-
 
 """
 PC: Use of 'p' here is confusing, since p1, p2 are different kinds of object
@@ -70,4 +70,14 @@ print("\n")
 
 num = Vector[FloatDPBounds]([x_(random.uniform(0, 5)), x_(random.uniform(0, 5))], dp)
 print(v)
-print (v + num)
+print(v + num)
+
+grid = [[[0, 1], [1, 1], [2, 2]],
+        [[1, 2], [2, 2], [2, 3]],
+        [[1, 2], [3, 4], [5, 6]]
+        ]
+
+# Use a nested list comprehension to sum the first and second elements of each subarray along axis 0
+sums = [[sum(subarray[i] for subarray in row) for i in range(len(row[0]))] for row in grid]
+
+print(sums)
