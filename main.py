@@ -63,9 +63,11 @@ class main:
         nash_payoffs = [self.payoffs(roots[i]) for i in range(len(tester)) if tester[i]]
         print("Payoffs:")
         print(*nash_payoffs, sep=' ')
+        print()
 
+        max_nash_strategies = [roots[i] for i in range(len(tester)) if tester[i]]
         max_check = LocalConvergence()
-        print(max_check.interval_evaluation(nash_payoffs, roots))
+        print(max_check.interval_evaluation(self.payoffs, max_nash_strategies[1], grid[:,22], 0))
 
 
 if __name__ == "__main__":
