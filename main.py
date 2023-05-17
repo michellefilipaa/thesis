@@ -15,15 +15,15 @@ class main:
         # [2*x - 1, 3*y - 1] (3)
         # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (4)
         # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (5)
-        self.payoffs = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
+        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
         game = DifferentialGame()
-        roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoffs, -1.25, 1)
+        roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions, -1.25, 1)
 
         print("Roots by Interval Newton:")
         print(*roots, sep=' ')
         print()
 
-        tester = game.test_local_max(self.payoffs, roots)
+        tester = game.test_local_max(self.payoff_functions, roots)
         print("Local Maxima: ", tester, "\n")
 
         """
@@ -32,14 +32,14 @@ class main:
         print()
         """
 
-        roots2 = game.find_roots(KrawczykSolver(game.tolerance, game.max_steps), self.payoffs, -1.25, 1)
+        roots2 = game.find_roots(KrawczykSolver(game.tolerance, game.max_steps), self.payoff_functions, -1.25, 1)
         print("Roots by Krawczyk:")
         print(*roots2, sep=' ')
         print()
 
-        print("Local Maxima: ", game.test_local_max(self.payoffs, roots2), "\n")
+        print("Local Maxima: ", game.test_local_max(self.payoff_functions, roots2), "\n")
 
-        search = GlobalSearch(self.payoffs, -1.25, 1)
+        search = GlobalSearch(self.payoff_functions, -1.25, 1)
 
         grid, payoff_matrix = search.create_grid()
         # Nash Brute Force Method 1
@@ -60,14 +60,15 @@ class main:
         print(*exact_points, sep=' ')
         print()
 
-        nash_payoffs = [self.payoffs(roots[i]) for i in range(len(tester)) if tester[i]]
+        nash_payoffs = [self.payoff_functions(roots[i]) for i in range(len(tester)) if tester[i]]
         print("Payoffs:")
         print(*nash_payoffs, sep=' ')
         print()
 
         max_nash_strategies = [roots[i] for i in range(len(tester)) if tester[i]]
         max_check = LocalConvergence()
-        print(max_check.interval_evaluation(self.payoffs, max_nash_strategies[1], grid[:,22], 0))
+        # max_check.interval_evaluation(self.payoff_functions, max_nash_strategies[1], grid[:,22], 0)
+        max_check.nash_evaluation([self.payoff_functions(roots[i]) for i in range(len(tester))], roots)
 
 
 if __name__ == "__main__":
