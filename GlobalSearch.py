@@ -13,6 +13,7 @@ class GlobalSearch:
     """
     |This method creates a grid of strategies for each player at intervals of 'spacing'.
     |These will be used to find potential approximate Nash equilibria.
+    |Returns: a grid of possible strategies
     """
     def create_grid(self, spacing=0.1):
         # Define the range and spacing of the grid
@@ -52,6 +53,12 @@ class GlobalSearch:
 
         return best_index
 
+    """
+    |This method finds the best response for each player given a set of strategies within certain bounds.
+    |payoff_matrix: the matrix of the payoff values of each set of strategies
+    |grid_points: an approximate set of all possible strategies within certain bounds
+    |Returns: the approximate best responses and the exact values of the best response.
+    """
     def brute_force(self, payoff_matrix, grid_points):
         indices_p0 = []
         indices_p1 = []
@@ -79,17 +86,28 @@ class GlobalSearch:
 
         return approx_best_responses, converged_roots
 
+    """
+    |This method checks which best response strategies for p0 and p1 are common.
+    |These mutual best responses are Nash Equilibria.
+    |best_responses_p0: the best response strategies found for p0
+    |best_responses_p1: the best response strategies found for p1
+    """
     @staticmethod
     def nash(best_responses_p0, best_responses_p1):
-        both_best = []
+        mutual_best = []
 
         for i in range(len(best_responses_p0)):
             for j in range(len(best_responses_p1)):
                 if definitely(best_responses_p0[i] == best_responses_p1[j]):
-                    both_best.append(best_responses_p0[i])
+                    mutual_best.append(best_responses_p0[i])
 
-        return both_best
+        return mutual_best
 
+    """
+    |This method finds the highest payoff in each row and checks if it is the highest for each player.
+    |If it is, then it is marked as a Nash Equilibrium.
+    |Returns: the approximate strategies
+    """
     @staticmethod
     def brute_force_nash_equilibrium(payoff_matrix, grid_points):
         num_rows = len(payoff_matrix)

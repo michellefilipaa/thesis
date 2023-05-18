@@ -69,6 +69,7 @@ class main:
         max_nash_strategies = [roots[i] for i in range(len(tester)) if tester[i]]
         max_check = LocalConvergence()
 
+        # TODO change this to the correct intervals
         p0_grid_strategies = [row[0][0] for row in grid]
         p1_grid_strategies = [vector[1] for vector in grid[0]]
 
