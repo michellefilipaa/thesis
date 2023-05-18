@@ -74,8 +74,9 @@ class main:
         p1_grid_strategies = [vector[1] for vector in grid[0]]
 
         print(max_check.interval_evaluation(self.payoff_functions, max_nash_strategies[0], p1_grid_strategies, 1))
+        print()
 
-        max_check.nash_evaluation([self.payoff_functions(roots[i]) for i in range(len(tester))], roots)
+        max_check.nash_evaluation(self.payoff_functions, max_nash_strategies)
 
 
 if __name__ == "__main__":

@@ -27,11 +27,8 @@ class LocalConvergence:
     |nash_strategies: the strategy combinations which are nash equilibria
     """
     def nash_evaluation(self, payoffs, nash_strategies):
-        compare_p0 = [payoff[0] for payoff in payoffs]
-        compare_p1 = [payoff[1] for payoff in payoffs]
-
-        self.compare_payoffs(compare_p0, nash_strategies, "p0")
-        self.compare_payoffs(compare_p1, nash_strategies, "p1")
+        self.compare_payoffs(payoffs[0], nash_strategies, "p0")
+        self.compare_payoffs(payoffs[1], nash_strategies, "p1")
 
 
     """
@@ -41,20 +38,20 @@ class LocalConvergence:
     |It then prints which strategy leads to the highest payoff. 
     """
     @staticmethod
-    def compare_payoffs(payoffs, strategies, player):
-        max_payoff = None
-        for s1, s2 in zip(payoffs[:-1], payoffs[1:]):
-            if possibly(s1 > s2):
-                max_payoff = s1
+    def compare_payoffs(payoff_function, strategies, player):
+        max_strategy = None
+        for s1, s2 in zip(strategies[:-1], strategies[1:]):
+            payoff_1 = payoff_function(s1)
+            payoff_2 = payoff_function(s2)
+            if possibly(payoff_1 > payoff_2):
+                max_strategy = s1
 
-            elif possibly(s1 < s2):
-                max_payoff = s2
+            elif possibly(payoff_1 < payoff_2):
+                max_strategy = s2
 
-        # TODO: change from returning payoff to returning strategy
-
-        if max_payoff is not None:
-            print(max_payoff, "is best for", player)
-            return max_payoff
+        if max_strategy is not None:
+            print(max_strategy, "is best for", player)
+            return max_strategy
 
     """
     |This method verifies if the local maxima found are also global maxima.
