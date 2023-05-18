@@ -51,6 +51,7 @@ class LocalConvergence:
                 max_payoff = s2
 
         # TODO: change from returning payoff to returning strategy
+
         if max_payoff is not None:
             print(max_payoff, "is best for", player)
             return max_payoff
@@ -68,11 +69,11 @@ class LocalConvergence:
         y_star = nash_strategy[player-1]
 
         for x in all_x:
-            x_strat = x[player]
-            new_strat = FloatDPBoundsVector([x_strat, y_star], dp)
+            new_strat = FloatDPBoundsVector([x, y_star], dp)
             if definitely(payoff(nash_strategy) > payoff(new_strat)):
                 continue
             else:
-                print("Not Global Maximum", x_strat, "leads to higher payoff")
+                return "{} {} leads to higher payoff".format('Not Global Maximum', x)
 
-        print("Global Max")
+        return "Global Max"
+
