@@ -40,13 +40,15 @@ class LocalConvergence:
     @staticmethod
     def compare_payoffs(payoff_function, strategies, player):
         max_strategy = None
+        max_payoff = FloatDPBounds(-100000, dp)
+
         for s1, s2 in zip(strategies[:-1], strategies[1:]):
-            payoff_1 = payoff_function(s1)
-            payoff_2 = payoff_function(s2)
-            if possibly(payoff_1 > payoff_2):
+            payoff_1 = evaluate(payoff_function, s1)
+            payoff_2 = evaluate(payoff_function, s2)
+            if possibly(payoff_1 > payoff_2) and definitely(payoff_1 > max_payoff):
                 max_strategy = s1
 
-            elif possibly(payoff_1 < payoff_2):
+            elif possibly(payoff_1 < payoff_2) and definitely(payoff_2 > max_payoff):
                 max_strategy = s2
 
         if max_strategy is not None:

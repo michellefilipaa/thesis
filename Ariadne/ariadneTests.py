@@ -54,7 +54,7 @@ v = Vector[FloatDPBounds]([2, 1], dp)
 print('Value of f(2,1) =', evaluate(f, v))
 print("Derivative at (2,1) =", evaluate(g, v))
 
-print("")
+print(FloatDPBounds(2, dp))
 
 """
 region = BoxDomainType([[pr_(0.1), pr_(1)]])
@@ -66,18 +66,4 @@ print("f(p):", g(p))
 print("\n")
 """
 
-# print("hessian=", hessian(f)) # how to use this ://
 
-num = Vector[FloatDPBounds]([x_(random.uniform(0, 5)), x_(random.uniform(0, 5))], dp)
-print(v)
-print(v + num)
-
-grid = [[[0, 1], [1, 1], [2, 2]],
-        [[1, 2], [2, 2], [2, 3]],
-        [[1, 2], [3, 4], [5, 6]]
-        ]
-
-# Use a nested list comprehension to sum the first and second elements of each subarray along axis 0
-sums = [[sum(subarray[i] for subarray in row) for i in range(len(row[0]))] for row in grid]
-
-print(sums)

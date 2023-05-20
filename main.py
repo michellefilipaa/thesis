@@ -12,11 +12,11 @@ class main:
         y = RealVariable("y")  # player 2
 
         # x**3 - 3*x**2 + 1, 3*y**4 - 16*y**3 + 18*y**2 (1) -> no nash equilibrium in (-1,1)
-        # -x**3 - y**3 + 3*x*y + 5, -x**2 + 4*x*y - y**2 + 8 (2)
-        # [2*x - 1, 3*y - 1] (3)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (4)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (5)
-        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
+        # -x**3 - y**3 + 3*x*y + 5, -x**2 + 4*x*y - y**2 + 8 (2) -> no nash equilibrium in (-1.25, 1)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (3)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (4)
+        # x**2 - y - 5, y**4 + 5*x
+        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y ])
         game = DifferentialGame()
         roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions, -1.25, 1)
 
