@@ -66,13 +66,18 @@ class LocalConvergence:
     def interval_evaluation(payoffs, nash_strategy, all_x, player):
         payoff = payoffs[player]
         y_star = nash_strategy[player-1]
+        max_check = []
 
         for x in all_x:
-            new_strat = FloatDPBoundsVector([x, y_star], dp)
-            if definitely(payoff(nash_strategy) > payoff(new_strat)):
+            if definitely(nash_strategy[0] == x):
                 continue
             else:
-                return "{} {} leads to higher payoff".format('Not Global Maximum', x)
+                new_strat = FloatDPBoundsVector([x, y_star], dp)
+                if definitely(payoff(nash_strategy) > payoff(new_strat)):
+                    continue
+                else:
+                    max_check.append(False)
+                    print("{} {} leads to higher payoff".format('Not Global Maximum', x))
 
-        return "Global Max"
+        return print("Global max" if all(max_check) else "{} Not Global Max".format(nash_strategy))
 
