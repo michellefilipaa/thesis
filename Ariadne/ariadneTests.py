@@ -3,7 +3,7 @@ import random
 
 x = RealVariable("x")
 y = RealVariable("y")
-f = make_function([x, y], [-x ** 2 - y ** 2 + 10 * x + 6 * y])  # root at (5,3)
+f = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y]) # root at (5,3)
 print('f(x, y)=', f)
 '''
 gives the derivative of f, in terms of x
@@ -65,5 +65,9 @@ print("p=fix(f):", p)
 print("f(p):", g(p))
 print("\n")
 """
+
+interval = FloatDPExactInterval(x_(-1.25), x_(1))
+interval2 = FloatDPUpperInterval(x_(-1.25), x_(1), dp)
+print(f(interval2))
 
 

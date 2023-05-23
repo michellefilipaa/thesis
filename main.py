@@ -2,6 +2,7 @@ import pandas as pd
 from pyariadne import *
 from DifferentialGame import DifferentialGame
 from GlobalSearch import GlobalSearch
+from IntervalEvaluation import IntervalEvaluation
 from LocalConvergence import LocalConvergence
 
 
@@ -16,7 +17,7 @@ class main:
         # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (3)
         # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (4)
         # x**2 - y - 5, y**4 + 5*x
-        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y ])
+        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
         game = DifferentialGame()
         roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions, -1.25, 1)
 
@@ -73,10 +74,10 @@ class main:
         p0_grid_strategies = [row[0][0] for row in grid]
         p1_grid_strategies = [vector[1] for vector in grid[0]]
 
-        max_check.interval_evaluation(self.payoff_functions, max_nash_strategies[1], p1_grid_strategies, 1)
-        print()
+        inter = IntervalEvaluation(-1.25, 1)
+        inter.interval_evaluation(self.payoff_functions, exact_points)
 
-        max_check.nash_evaluation(self.payoff_functions, max_nash_strategies)
+        # max_check.nash_evaluation(self.payoff_functions, max_nash_strategies)
 
 
 if __name__ == "__main__":

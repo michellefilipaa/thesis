@@ -55,29 +55,3 @@ class LocalConvergence:
             print(max_strategy, "is best for", player)
             return max_strategy
 
-    """
-    |This method verifies if the local maxima found are also global maxima.
-    |payoffs: the payoffs given by the strategy function of each player
-    |nash_strategies: the strategy combinations that have been found to be nash equilibria
-    |all_x: the other strategy points that will be evaluated against the nash strategy
-    |player: 0 or 1, depending on which player is being evaluated
-    """
-    @staticmethod
-    def interval_evaluation(payoffs, nash_strategy, all_x, player):
-        payoff = payoffs[player]
-        y_star = nash_strategy[player-1]
-        max_check = []
-
-        for x in all_x:
-            if definitely(nash_strategy[0] == x):
-                continue
-            else:
-                new_strat = FloatDPBoundsVector([x, y_star], dp)
-                if definitely(payoff(nash_strategy) > payoff(new_strat)):
-                    continue
-                else:
-                    max_check.append(False)
-                    print("{} {} leads to higher payoff".format('Not Global Maximum', x))
-
-        return print("Global max" if all(max_check) else "{} Not Global Max".format(nash_strategy))
-
