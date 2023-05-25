@@ -1,24 +1,40 @@
 from pyariadne import *
-
 from DifferentialGame import DifferentialGame
 
 x = RealVariable("x")
 y = RealVariable("y")
+check_max = DifferentialGame()
+zero = FloatDPBounds(0, dp)
 
 
 class IntervalEvaluation:
-    def __init__(self, lower, upper):
+
+    def __init__(self, payoff_function, lower=-1.25, upper=1):
+        self.payoff_function = payoff_function
         self.lower = lower
         self.upper = upper
-        self.interval = FloatDPUpperInterval(x_(lower), x_(upper), dp)
+        self.interval = [FloatDPUpperInterval(x_(lower), x_(upper), dp)]
 
-    def interval_evaluation(self, payoff_function, nash):
-        condition1 = definitely(payoff_function(self.interval) < payoff_function(nash))
-        check_max = DifferentialGame()
-        condition2 = check_max.test_local_max(payoff_function, self.interval)
+    def interval_evaluation(self, nash, intervals):
+        for interval in intervals:
+            condition1 = definitely(self.payoff_function(interval) < self.payoff_function(nash))
+            condition2 = not definitely(derivative(interval) == zero)
+            condition3 = definitely(derivative(interval) > zero)
+            condition4 = definitely(self.payoff_function(interval) > self.payoff_function(nash))
+            condition5 = not condition4
+            condition6 = definitely(check_max.test_local_max(self.payoff_function, interval) < zero)
 
-        if condition1 and condition2:
-            return print("{} is a unique local max in {}".format(nash, self.interval))
+            if condition1 or condition2 or condition3:
+                print("{} is a unique local max in {}".format(nash, interval))
+
+            elif condition4:
+                print("{} is not a global Nash equilibrium".format(nash))
+
+            elif condition5 and condition6:
+                print("{} is a unique local max in {}".format(nash, interval))
+
+            else:
+                return self.interval_evaluation(nash, self.split_intervals(interval))
 
     @staticmethod
     def split_intervals(intervals):
@@ -26,7 +42,7 @@ class IntervalEvaluation:
         new_intervals = []
         for interval in intervals:
             start, end = interval
-            mid_point = (start + end) / 2
+            mid_point = midpoint(interval)
             new_intervals.append([start, mid_point])
             new_intervals.append([mid_point, end])
 

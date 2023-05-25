@@ -75,7 +75,7 @@ class main:
         p1_grid_strategies = [vector[1] for vector in grid[0]]
 
         inter = IntervalEvaluation(-1.25, 1)
-        inter.interval_evaluation(self.payoff_functions, exact_points)
+        inter.split_intervals(inter.interval)
 
         # max_check.nash_evaluation(self.payoff_functions, max_nash_strategies)
 
