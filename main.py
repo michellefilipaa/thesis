@@ -14,10 +14,10 @@ class main:
 
         # x**3 - 3*x**2 + 1, 3*y**4 - 16*y**3 + 18*y**2 (1) -> no nash equilibrium in (-1,1)
         # -x**3 - y**3 + 3*x*y + 5, -x**2 + 4*x*y - y**2 + 8 (2) -> no nash equilibrium in (-1.25, 1)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (3)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (4)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (3) -> 1 nash equilibrium in (1.25, 1)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (4) -> 2 nash equilibrium in (1.25, 1)
         # x**2 - y - 5, y**4 + 5*x
-        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
+        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y])
         game = DifferentialGame()
         roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions, -1.25, 1)
 
@@ -70,13 +70,14 @@ class main:
         max_nash_strategies = [roots[i] for i in range(len(tester)) if tester[i]]
         max_check = LocalConvergence()
 
-        # TODO change this to the correct intervals
-        p0_grid_strategies = [row[0][0] for row in grid]
-        p1_grid_strategies = [vector[1] for vector in grid[0]]
+        inter = IntervalEvaluation(self.payoff_functions)
+        intervals = inter.split_intervals(inter.intervals)
 
-        inter = IntervalEvaluation(-1.25, 1)
-        inter.split_intervals(inter.interval)
-
+        print()
+        for nash in exact_points:
+            eval_p0 = inter.interval_evaluation(nash, inter.ari_intervals, 0)
+            eval_p1 = inter.interval_evaluation(nash, inter.ari_intervals, 1)
+            print("{} is a Global Max".format(nash) if all(eval_p0 and eval_p1) else "{} is not global max".format(nash))
         # max_check.nash_evaluation(self.payoff_functions, max_nash_strategies)
 
 

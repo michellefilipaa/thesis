@@ -4,7 +4,7 @@ from DifferentialGame import DifferentialGame
 x = RealVariable("x")
 y = RealVariable("y")
 check_max = DifferentialGame()
-zero = FloatDPBounds(0, dp)
+zero = FloatDPLowerBound(0, dp)
 
 
 class IntervalEvaluation:
@@ -13,65 +13,73 @@ class IntervalEvaluation:
         self.payoff_function = payoff_function
         self.lower = lower
         self.upper = upper
-        self.interval = [FloatDPUpperInterval(x_(lower), x_(upper), dp)]
+        self.intervals = [[lower, upper]]
+        self.ari_intervals = [[FloatDPUpperInterval(x_(upper), x_(lower), dp)]]
 
-    def interval_evaluation(self, nash, intervals):
-        for interval in intervals:
-            condition1 = definitely(self.payoff_function(interval) < self.payoff_function(nash))
-            condition2 = not definitely(derivative(interval) == zero)
-            condition3 = definitely(derivative(interval) > zero)
-            condition4 = definitely(self.payoff_function(interval) > self.payoff_function(nash))
-            condition5 = not condition4
-            condition6 = definitely(check_max.test_local_max(self.payoff_function, interval) < zero)
+    """
+       |This method verifies if the local maxima found are also global maxima. 
+       |It evaluates intervals under 6 conditions and depending on which ones hold,
+       |that will tell us whether or not the Nash is a global Nash.
+       |nash: the nash equilibrium that has been found
+       |intervals: the intervals in which the evaluation will be performed in
+       """
+    def interval_evaluation(self, nash, intervals, player):
+        interval_equilibrium = FloatDPUpperInterval(nash[player].lower(), nash[player].upper())
+        f = self.payoff_function[player]
+        results = []
 
-            if condition1 or condition2 or condition3:
-                print("{} is a unique local max in {}".format(nash, interval))
+        for element in intervals:
+            for interval in element:
+                box = FloatDPUpperBox([interval, interval_equilibrium])
+                payoff_range = image(box, f)
+                deriv_payoff_range = image(box, derivative(f, player))
+                second_deriv_payoff_range = image(box, derivative(derivative(f, player), player))
 
-            elif condition4:
-                print("{} is not a global Nash equilibrium".format(nash))
+                condition1 = definitely(payoff_range.upper_bound() < FloatDPLowerBound(f(nash), dp))
+                condition2 = (definitely(deriv_payoff_range.lower_bound() < FloatDPUpperBound(0, dp)) or definitely(
+                    deriv_payoff_range.upper_bound() > zero))
+                condition3 = definitely(second_deriv_payoff_range.upper_bound() > zero)
+                condition4 = definitely(payoff_range.lower_bound() > FloatDPUpperBound(f(nash), dp))
+                condition5 = not condition4
+                condition6 = not condition3
 
-            elif condition5 and condition6:
-                print("{} is a unique local max in {}".format(nash, interval))
+                if condition1 or condition2 or condition3:
+                    # print("{} is a unique local max in {}".format(nash, interval))
+                    results.append(True)
 
-            else:
-                return self.interval_evaluation(nash, self.split_intervals(interval))
+                elif condition4:
+                    # print("{} is not a global Nash equilibrium".format(nash))
+                    results.append(False)
 
-    @staticmethod
-    def split_intervals(intervals):
-        # TODO: ariadne-fy this
+                elif condition5 and condition6:
+                    # print("{} is a unique local max in {}".format(nash, interval))
+                    results.append(True)
+
+        if not results:
+            results.extend(self.interval_evaluation(nash, self.split_intervals(self.intervals), player))
+
+        return results
+
+    """
+    |This method splits an interval into two.
+    |Returns: a list of Ariadne object intervals
+    """
+    def split_intervals(self, intervals):
         new_intervals = []
         for interval in intervals:
             start, end = interval
-            mid_point = midpoint(interval)
+            mid_point = (start + end) / 2
             new_intervals.append([start, mid_point])
             new_intervals.append([mid_point, end])
 
-        return new_intervals
+        ari_intervals = [[FloatDPUpperInterval(x_(interval[0]), x_(interval[1]), dp)] for interval in new_intervals]
+        self.update_intervals(new_intervals, ari_intervals)
+
+        return ari_intervals
 
     """
-    |This method verifies if the local maxima found are also global maxima.
-    |payoffs: the payoffs given by the strategy function of each player
-    |nash_strategies: the strategy combinations that have been found to be nash equilibria
-    |all_x: the other strategy points that will be evaluated against the nash strategy
-    |player: 0 or 1, depending on which player is being evaluated
+    |This method updates the local variables for the intervals. 
     """
-    @staticmethod
-    def interval_evaluation2(payoffs, nash_strategy, all_x, player):
-        payoff = payoffs[player]
-        y_star = nash_strategy[player - 1]
-        max_check = []
-
-        for x in all_x:
-            if definitely(nash_strategy[0] == x):
-                continue
-            else:
-                new_strat = FloatDPBoundsVector([x, y_star], dp)
-                if definitely(payoff(nash_strategy) > payoff(new_strat)):
-                    continue
-                else:
-                    max_check.append(False)
-                    print("{} {} leads to higher payoff".format('Not Global Maximum', x))
-
-        return print("Global max" if all(max_check) else "{} Not Global Max".format(nash_strategy))
-
-
+    def update_intervals(self, new_intervals, ariadne):
+        self.intervals = new_intervals
+        self.ari_intervals = ariadne
