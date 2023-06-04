@@ -78,13 +78,11 @@ class GlobalSearch:
 
         best_responses_p0 = [row[index] for row, index in zip(grid_points, indices_p0)]
         approx_best_responses = self.nash(best_responses_p0, best_responses_p1)
+        result = "No common best response found" if len(approx_best_responses) == 0 else approx_best_responses
 
-        convergence = LocalConvergence()
-        converged_roots = []
-        for point in approx_best_responses:
-            converged_roots.append(convergence.newtons(self.payoff_function, point))
-
-        return approx_best_responses, converged_roots
+        roots = self.converged_roots(approx_best_responses)
+        roots_result = "Unable to find exact roots without best responses" if len(roots) == 0 else roots
+        return result, roots_result
 
     """
     |This method checks which best response strategies for p0 and p1 are common.
@@ -108,8 +106,7 @@ class GlobalSearch:
     |If it is, then it is marked as a Nash Equilibrium.
     |Returns: the approximate strategies
     """
-    @staticmethod
-    def brute_force_nash_equilibrium(payoff_matrix, grid_points):
+    def brute_force_nash_equilibrium(self, payoff_matrix, grid_points):
         num_rows = len(payoff_matrix)
         num_cols = len(payoff_matrix[0])
 
@@ -132,4 +129,12 @@ class GlobalSearch:
                 if is_nash_equilibrium:
                     nash_equilibria.append(grid_points[row][col])
 
-        return nash_equilibria
+        return nash_equilibria, self.converged_roots(nash_equilibria)
+
+    def converged_roots(self, approx_best_responses):
+        convergence = LocalConvergence()
+        converged_roots = []
+        for point in approx_best_responses:
+            converged_roots.append(convergence.newtons(self.payoff_function, point))
+
+        return converged_roots

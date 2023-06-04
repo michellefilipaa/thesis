@@ -42,16 +42,13 @@ class LocalConvergence:
         max_strategy = None
         max_payoff = FloatDPBounds(-100000, dp)
 
-        for s1, s2 in zip(strategies[:-1], strategies[1:]):
-            payoff_1 = evaluate(payoff_function, s1)
-            payoff_2 = evaluate(payoff_function, s2)
-            if possibly(payoff_1 > payoff_2) and definitely(payoff_1 > max_payoff):
-                max_strategy = s1
-
-            elif possibly(payoff_1 < payoff_2) and definitely(payoff_2 > max_payoff):
-                max_strategy = s2
+        for s in strategies:
+            payoff = evaluate(payoff_function, s)[player]
+            if definitely(payoff > max_payoff):
+                max_strategy = s
+                max_payoff = payoff
 
         if max_strategy is not None:
-            print(max_strategy, "is best for", player)
+            print(max_strategy, "is best for player", player)
             return max_strategy
 

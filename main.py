@@ -12,11 +12,12 @@ class main:
         x = RealVariable("x")  # player 1
         y = RealVariable("y")  # player 2
 
-        # x**3 - 3*x**2 + 1, 3*y**4 - 16*y**3 + 18*y**2 (1) -> no nash equilibrium in (-1,1)
-        # -x**3 - y**3 + 3*x*y + 5, -x**2 + 4*x*y - y**2 + 8 (2) -> no nash equilibrium in (-1.25, 1)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (3) -> 1 nash equilibrium in (1.25, 1)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (4) -> 2 nash equilibrium in (1.25, 1)
-        # x**2 - y - 5, y**4 + 5*x
+        # x**3 - 3*x**2 + 1, 3*y**4 - 16*y**3 + 18*y**2  -> no nash equilibrium in (-1,1)
+        # -x**3 - y**3 + 3*x*y + 5, -x**2 + 4*x*y - y**2 + 8 -> no nash equilibrium in (-1.25, 1)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (2) -> 1 nash equilibrium in (1.25, 1)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (1) -> 2 nash equilibrium in (1.25, 1)
+        # y*(x**2) + x*(y**2) + x, x*y + x**2 - y**2
+        # -x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**2 (3) -> 2 nash in (1.25, 1)
         self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y])
         game = DifferentialGame()
         roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions, -1.25, 1)
@@ -45,10 +46,14 @@ class main:
 
         grid, payoff_matrix = search.create_grid()
         # Nash Brute Force Method 1
-        approx_nash = search.brute_force_nash_equilibrium(payoff_matrix, grid)
+        approx_nash, converged_nash = search.brute_force_nash_equilibrium(payoff_matrix, grid)
 
         print("Approximate Roots with Method 1")
         print(*approx_nash, sep=' ')
+        print()
+
+        print("Converged Roots with Method 1")
+        print(*converged_nash, sep=' ')
         print()
 
         # Nash Best Response Brute Force Method
@@ -70,15 +75,17 @@ class main:
         max_nash_strategies = [roots[i] for i in range(len(tester)) if tester[i]]
         max_check = LocalConvergence()
 
-        inter = IntervalEvaluation(self.payoff_functions)
-        intervals = inter.split_intervals(inter.intervals)
-
+        print("Best strategies for each player:")
+        max_check.compare_payoffs(self.payoff_functions, max_nash_strategies, 0)
+        max_check.compare_payoffs(self.payoff_functions, max_nash_strategies, 1)
         print()
-        for nash in exact_points:
+
+        print("Determining if the Nash is a Global Nash:")
+        inter = IntervalEvaluation(self.payoff_functions)
+        for nash in roots:
             eval_p0 = inter.interval_evaluation(nash, inter.ari_intervals, 0)
             eval_p1 = inter.interval_evaluation(nash, inter.ari_intervals, 1)
             print("{} is a Global Max".format(nash) if all(eval_p0 and eval_p1) else "{} is not global max".format(nash))
-        # max_check.nash_evaluation(self.payoff_functions, max_nash_strategies)
 
 
 if __name__ == "__main__":
