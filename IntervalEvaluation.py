@@ -14,7 +14,7 @@ class IntervalEvaluation:
         self.lower = lower
         self.upper = upper
         self.intervals = [[lower, upper]]
-        self.ari_intervals = [[FloatDPUpperInterval(x_(upper), x_(lower), dp)]]
+        self.ari_intervals = [[FloatDPUpperInterval(x_(lower), x_(upper), dp)]]
 
     """
        |This method verifies if the local maxima found are also global maxima. 
@@ -23,35 +23,37 @@ class IntervalEvaluation:
        |nash: the nash equilibrium that has been found
        |intervals: the intervals in which the evaluation will be performed in
        """
+
     def interval_evaluation(self, nash, intervals, player):
-        interval_equilibrium = FloatDPUpperInterval(nash[player].lower(), nash[player].upper())
-        f = self.payoff_function[player]
+        equilibrium = nash[player]
+        interval_equilibrium = FloatDPUpperInterval(equilibrium.lower(), equilibrium.upper())
+        payoff = self.payoff_function[player]
+        deriv_payoff = derivative(payoff, player)
+        second_deriv_payoff = derivative(deriv_payoff, player)
         results = []
 
         for element in intervals:
             for interval in element:
                 box = FloatDPUpperBox([interval, interval_equilibrium])
-                payoff_range = image(box, f)
-                deriv_payoff_range = image(box, derivative(f, player))
-                second_deriv_payoff_range = image(box, derivative(derivative(f, player), player))
+                payoff_range = image(box, payoff)
+                deriv_payoff_range = image(box, deriv_payoff)
+                second_deriv_payoff_range = image(box, second_deriv_payoff)
 
-                condition1 = definitely(payoff_range.upper_bound() < FloatDPLowerBound(f(nash), dp))
-                condition2 = (definitely(deriv_payoff_range.lower_bound() < FloatDPUpperBound(0, dp)) or definitely(
-                    deriv_payoff_range.upper_bound() > zero))
-                condition3 = definitely(second_deriv_payoff_range.upper_bound() > zero)
-                condition4 = definitely(payoff_range.lower_bound() > FloatDPUpperBound(f(nash), dp))
-                condition5 = not condition4
-                condition6 = not condition3
-
+                condition1 = definitely(payoff_range.upper_bound() < FloatDPLowerBound(payoff(nash), dp))
+                condition2 = (definitely(deriv_payoff_range.lower_bound() > FloatDPUpperBound(0, dp)) or definitely(
+                    deriv_payoff_range.upper_bound() < zero))  # no zero in the interval so f'(I) ≠ 0
+                condition3 = definitely(second_deriv_payoff_range.lower_bound() > FloatDPUpperBound(0, dp))
+                condition4 = definitely(payoff_range.lower_bound() > FloatDPUpperBound(payoff(nash), dp))
+                condition5 = definitely(
+                    second_deriv_payoff_range.upper_bound() < zero)  # and contains(interval, nash[player])
                 if condition1 or condition2 or condition3:
                     # print("{} is a unique local max in {}".format(nash, interval))
                     results.append(True)
 
                 elif condition4:
-                    # print("{} is not a global Nash equilibrium".format(nash))
-                    results.append(False)
+                    return False  # print("{} is not a global Nash equilibrium".format(nash))
 
-                elif condition5 and condition6:
+                elif condition5:
                     # print("{} is a unique local max in {}".format(nash, interval))
                     results.append(True)
 
@@ -64,6 +66,7 @@ class IntervalEvaluation:
     |This method splits an interval into two.
     |Returns: a list of Ariadne object intervals
     """
+
     def split_intervals(self, intervals):
         new_intervals = []
         for interval in intervals:
@@ -80,6 +83,7 @@ class IntervalEvaluation:
     """
     |This method updates the local variables for the intervals. 
     """
+
     def update_intervals(self, new_intervals, ariadne):
         self.intervals = new_intervals
         self.ari_intervals = ariadne
