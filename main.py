@@ -14,11 +14,12 @@ class main:
 
         # x**3 - 3*x**2 + 1, 3*y**4 - 16*y**3 + 18*y**2  -> no nash equilibrium in (-1,1)
         # -x**3 - y**3 + 3*x*y + 5, -x**2 + 4*x*y - y**2 + 8 -> 1 nash equilibrium in (-5, 5)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (2) -> 1 nash equilibrium in (1.25, 1)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (1) -> 2 nash equilibrium in (1.25, 1)
-        # -x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**2 (3) -> 2 nash in (1.25, 1)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (2) -> 1 nash equilibrium in (-1.25, 1)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (1) -> 2 nash equilibrium in (-1.25, 1)
+        # -x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**2 (3) -> 2 nash in (-1.25, 1)
         # -(x**4 + y**4) + 2*(x**2 + y**2),  x**2 - y**4 + 2*x*y -> global search doesnt work
-        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
+        # -x**3 - y**3 + 3*x*y, -x**3 - y**4 + 3*x*y (4) -> 1 nash in (-1.25, 1)
+        self.payoff_functions = make_function([x, y], [-x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**2])
         game = DifferentialGame()
         roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions)
 
@@ -87,11 +88,13 @@ class main:
             eval_p1 = inter.interval_evaluation(nash, inter.ari_intervals, 1)
             print("{} is a Global Max".format(nash) if all(eval_p0 and eval_p1) else "{} is not global max".format(nash))
         print()
-
-        nash = grid[5][1]
+        """
+        print("actually not a global max")
+        nash = grid[5][4]
         eval_p0 = inter.interval_evaluation(nash, inter.ari_intervals, 0)
         eval_p1 = inter.interval_evaluation(nash, inter.ari_intervals, 1)
         print("{} is a Global Max".format(nash) if all(eval_p0 and eval_p1) else "{} is not global max".format(nash))
+        """
 
 
 if __name__ == "__main__":

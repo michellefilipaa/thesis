@@ -18,7 +18,7 @@ class DifferentialGame:
     |Returns -> the roots found which are potential Nash equilibria
     """
     @staticmethod
-    def find_roots(solver, payoffs, lower_bound=-1, upper_bound=1):
+    def find_roots(solver, payoffs, lower_bound=-1.25, upper_bound=1):
         p0_deriv = derivative(payoffs[0], 0)
         p1_deriv = derivative(payoffs[1], 1)
         g = join(p0_deriv, p1_deriv)

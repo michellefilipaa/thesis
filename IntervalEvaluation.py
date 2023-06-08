@@ -46,6 +46,7 @@ class IntervalEvaluation:
                 condition4 = definitely(payoff_range.lower_bound() > FloatDPUpperBound(payoff(nash), dp))
                 condition5 = definitely(
                     second_deriv_payoff_range.upper_bound() < zero)  # and contains(interval, nash[player])
+
                 if condition1 or condition2 or condition3:
                     # print("{} is a unique local max in {}".format(nash, interval))
                     results.append(True)
@@ -77,7 +78,7 @@ class IntervalEvaluation:
 
         ari_intervals = [[FloatDPUpperInterval(x_(interval[0]), x_(interval[1]), dp)] for interval in new_intervals]
         self.update_intervals(new_intervals, ari_intervals)
-
+        print("called split")
         return ari_intervals
 
     """
