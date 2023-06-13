@@ -24,16 +24,23 @@ box = FloatDPUpperBox([interval, interval_equilibrium])
 payoff0_range = image(box, payoff0)
 deriv_payoff0_range = image(box, deriv_payoff0)
 
+print("eq lower", equilibrium.lower())
+print("eq upper", equilibrium.upper())
+print("interval lower", interval.lower_bound())
+print("interval upper", interval.upper_bound())
 print("payoff0_range", payoff0_range)
 print("deriv_payoff0_range", deriv_payoff0_range)
 
-
+print()
+print("eq lower < than interval lower:", equilibrium.lower() < interval.lower_bound())
+print(equilibrium.upper() > interval.lower_bound())
 # print(payoff0_range.lower_bound() > FloatDPUpperBound(0, dp))
 # print(definitely(payoff0_range.lower_bound() > FloatDPUpperBound(0, dp)))
 # print(payoff0_range.upper_bound() >= FloatDPLowerBound(0, dp))
 # print(possibly(payoff0_range.upper_bound() > FloatDPLowerBound(0, dp)))
-print(FloatDP(roots[0][0]))
 
+print("contains eq", contains(interval, equilibrium))  # doesnt work
+print("contains eq lower", contains(interval, equilibrium.lower))  # doesnt work
 print("contains 1:", contains(interval, FloatDP(1, dp)))
 print("contains 0.3:", contains(interval, FloatDP(x_(0.3), dp)))
 print("done")

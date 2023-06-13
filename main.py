@@ -19,7 +19,7 @@ class main:
         # -x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**2 (3) -> 2 nash in (-1.25, 1)
         # -(x**4 + y**4) + 2*(x**2 + y**2),  x**2 - y**4 + 2*x*y -> global search doesnt work
         # -x**3 - y**3 + 3*x*y, -x**3 - y**4 + 3*x*y (4) -> 1 nash in (-1.25, 1)
-        self.payoff_functions = make_function([x, y], [-x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**2])
+        self.payoff_functions = make_function([x, y], [-(x-y)**2, -x**3 - y**4 + 3*x*y])
         game = DifferentialGame()
         roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions)
 
