@@ -20,6 +20,7 @@ interval = FloatDPUpperInterval(x_(-1.25), x_(1), dp)
 
 interval_equilibrium = FloatDPUpperInterval(equilibrium.lower(), equilibrium.upper())
 
+midp = midpoint(interval_equilibrium)
 box = FloatDPUpperBox([interval, interval_equilibrium])
 payoff0_range = image(box, payoff0)
 deriv_payoff0_range = image(box, deriv_payoff0)
@@ -32,15 +33,15 @@ print("payoff0_range", payoff0_range)
 print("deriv_payoff0_range", deriv_payoff0_range)
 
 print()
-print("eq lower < than interval lower:", equilibrium.lower() < interval.lower_bound())
-print(equilibrium.upper() > interval.lower_bound())
+#print("eq lower < than interval lower:", equilibrium.lower() < interval.lower_bound())
+#print(equilibrium.upper() > interval.lower_bound())
 # print(payoff0_range.lower_bound() > FloatDPUpperBound(0, dp))
 # print(definitely(payoff0_range.lower_bound() > FloatDPUpperBound(0, dp)))
 # print(payoff0_range.upper_bound() >= FloatDPLowerBound(0, dp))
 # print(possibly(payoff0_range.upper_bound() > FloatDPLowerBound(0, dp)))
 
-print("contains eq", contains(interval, equilibrium))  # doesnt work
-print("contains eq lower", contains(interval, equilibrium.lower))  # doesnt work
+print("contains eq", contains(interval, midp))  # doesnt work
+# print("contains eq lower", contains(interval, equilibrium.lower))  # doesnt work
 print("contains 1:", contains(interval, FloatDP(1, dp)))
 print("contains 0.3:", contains(interval, FloatDP(x_(0.3), dp)))
 print("done")

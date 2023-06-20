@@ -1,7 +1,7 @@
 import pandas as pd
 from pyariadne import *
 from DifferentialGame import DifferentialGame
-from GlobalSearch import GlobalSearch
+from HeuristicSearch import HeuristicSearch
 from IntervalEvaluation import IntervalEvaluation
 from LocalConvergence import LocalConvergence
 
@@ -14,12 +14,15 @@ class main:
 
         # x**3 - 3*x**2 + 1, 3*y**4 - 16*y**3 + 18*y**2  -> no nash equilibrium in (-1,1)
         # -x**3 - y**3 + 3*x*y + 5, -x**2 + 4*x*y - y**2 + 8 -> 1 nash equilibrium in (-5, 5)
-        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y (2) -> 1 nash equilibrium in (-1.25, 1)
+        # -x**2 + 2*x*y - y**2, -x**3 - y**3 + 3*x*y -> 1 nash equilibrium in (-1.25, 1)
+        # -(x**4 + y**4) + 2*(x**2 + y**2),  x**2 - y**4 + 2*x*y
+        # -x**3 - y**3 + 3*x*y, -x**3 - y**4 + 3*x*y -> 1 nash in (-1.25, 1)
+        # games in thesis
         # -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y (1) -> 2 nash equilibrium in (-1.25, 1)
-        # -x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**2 (3) -> 2 nash in (-1.25, 1)
-        # -(x**4 + y**4) + 2*(x**2 + y**2),  x**2 - y**4 + 2*x*y -> global search doesnt work
-        # -x**3 - y**3 + 3*x*y, -x**3 - y**4 + 3*x*y (4) -> 1 nash in (-1.25, 1)
-        self.payoff_functions = make_function([x, y], [-(x-y)**2, -x**3 - y**4 + 3*x*y])
+        # -x**2 + 2*x*y - y**2, -x**4 - y**4 + 4*x*y (2) -> 2 nash in (-1.25,1)
+        # -x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**5 (3) -> 2 nash in (-1.25, 1)
+
+        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
         game = DifferentialGame()
         roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions)
 
@@ -43,7 +46,7 @@ class main:
 
         print("Local Maxima: ", game.test_local_max(self.payoff_functions, roots2), "\n")
 
-        search = GlobalSearch(self.payoff_functions, -1.25, 1)
+        search = HeuristicSearch(self.payoff_functions, -1.25, 1)
 
         grid, payoff_matrix = search.create_grid()
         # Nash Brute Force Method 1
@@ -68,9 +71,9 @@ class main:
         print(*exact_points, sep=' ')
         print()
 
-        nash_payoffs = [self.payoff_functions(roots[i]) for i in range(len(tester)) if tester[i]]
+        all_payoffs = [self.payoff_functions(roots[i]) for i in range(len(roots))]
         print("Payoffs:")
-        print(*nash_payoffs, sep=' ')
+        print(*all_payoffs, sep=' ')
         print()
 
         max_nash_strategies = [roots[i] for i in range(len(tester)) if tester[i]]

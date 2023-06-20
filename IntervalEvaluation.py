@@ -45,7 +45,16 @@ class IntervalEvaluation:
                 condition3 = definitely(second_deriv_payoff_range.lower_bound() > FloatDPUpperBound(0, dp))
                 condition4 = definitely(payoff_range.lower_bound() > FloatDPUpperBound(payoff(nash), dp))
                 condition5 = definitely(
-                    second_deriv_payoff_range.upper_bound() < zero)  # and contains(interval, nash[player])
+                    second_deriv_payoff_range.upper_bound() < zero) and definitely(contains(interval, midpoint(interval_equilibrium)))
+                """
+                print()
+                print(condition1)
+                print(condition2)
+                print(condition3)
+                print(condition4)
+                print(condition5)
+                print()
+                """
 
                 if condition1 or condition2 or condition3:
                     # print("{} is a unique local max in {}".format(nash, interval))

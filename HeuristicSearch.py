@@ -3,7 +3,7 @@ import numpy as np
 from LocalConvergence import LocalConvergence
 
 
-class GlobalSearch:
+class HeuristicSearch:
     def __init__(self, payoff_function, lower_bound=-1, upper_bound=1):
         self.payoff_function = payoff_function
         # PC: Suggest using a Box with lower and upper bounds for each player
