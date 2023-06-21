@@ -46,15 +46,7 @@ class IntervalEvaluation:
                 condition3 = definitely(second_deriv_payoff_range.lower_bound() > FloatDPUpperBound(0, dp))
                 condition4 = definitely(payoff_range.lower_bound() > FloatDPUpperBound(payoff(nash), dp))
                 condition5 = definitely(second_deriv_payoff_range.upper_bound() < zero) and possibly(contains(interval, midpoint(interval_equilibrium)))
-                """
-                print()
-                print("1", condition1)
-                print("2", condition2)
-                print("3", condition3)
-                print("4", condition4)
-                print("5", condition5)
-                print()
-                """
+
                 if condition1 or condition2 or condition3:
                     # print("{} is a unique local max in {}".format(nash, interval))
                     results.append(True)
@@ -66,8 +58,13 @@ class IntervalEvaluation:
                     # print("{} is a unique local max in {}".format(nash, interval))
                     results.append(True)
 
+        # if len(results) == 0:
+        #    results.extend(self.interval_evaluation(nash, self.split_intervals(self.intervals), player))
         if len(results) == 0:
-            results.extend(self.interval_evaluation(nash, self.split_intervals(self.intervals), player))
+            recursive_results = self.interval_evaluation(nash, self.split_intervals(self.intervals), player)
+            if isinstance(recursive_results, bool):
+                recursive_results = [recursive_results]
+            results.extend(recursive_results)
 
         return results
 
@@ -86,7 +83,6 @@ class IntervalEvaluation:
 
         ari_intervals = [[FloatDPUpperInterval(x_(interval[0]), x_(interval[1]), dp)] for interval in new_intervals]
         self.update_intervals(new_intervals, ari_intervals)
-
         return ari_intervals
 
     """

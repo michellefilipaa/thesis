@@ -90,8 +90,15 @@ class main:
         for nash in max_nash_strategies:
             eval_p0 = inter.interval_evaluation(nash, inter.ari_intervals, 0)
             eval_p1 = inter.interval_evaluation(nash, inter.ari_intervals, 1)
-            print("{} is a Global Max".format(nash) if all(eval_p0 and eval_p1) else "{} is not global max".format(nash))
+            print("{} is a Global Max".format(nash) if eval_p0[0] and eval_p1[0] else "{} is not a global max".format(nash))
         print()
+
+        print("Showing the functionality by evaluating a point that is definitely not a global max:")
+        not_nash = [roots[i] for i in range(len(tester)) if not tester[i]]
+        for nn in not_nash:
+            eval_p0 = inter.interval_evaluation(nn, inter.ari_intervals, 0)
+            eval_p1 = inter.interval_evaluation(nn, inter.ari_intervals, 1)
+            print("{} is a Global Max".format(nn) if eval_p0[0] and eval_p1[0] else "{} is not a global max".format(nn))
 
 
 if __name__ == "__main__":
