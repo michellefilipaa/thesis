@@ -39,8 +39,6 @@ class DifferentialGame:
     def test_local_max(payoffs, roots):
         check_roots = []
         for root in roots:
-            # p0_2nd_deriv = second_derivative(payoffs[0], 0)
-            # p1_2nd_deriv = second_derivative(payoffs[1], 1)
             p0_2nd_deriv = derivative(derivative(payoffs[0], 0), 0)
             p1_2nd_deriv = derivative(derivative(payoffs[1], 1), 1)
 

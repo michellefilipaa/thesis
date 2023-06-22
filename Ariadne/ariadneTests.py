@@ -1,7 +1,6 @@
 from pyariadne import *
-
 from DifferentialGame import DifferentialGame
-
+# ignore file
 x = RealVariable("x")
 y = RealVariable("y")
 f = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])

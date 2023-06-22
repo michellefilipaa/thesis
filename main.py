@@ -1,4 +1,3 @@
-import pandas as pd
 from pyariadne import *
 from DifferentialGame import DifferentialGame
 from HeuristicSearch import HeuristicSearch
@@ -23,7 +22,7 @@ class main:
         # -x**2 + 2*x*y - y**2, -x**4 - y**4 + 4*x*y (2) -> 2 nash in (-1.25,1)
         # -x**4 - y**4 + 2*(x**2) - 2*(y**2), x*y + x**2 - y**5 (3) -> 2 nash in (-1.25, 1)
 
-        self.payoff_functions = make_function([x, y], [-x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
+        self.payoff_functions = make_function([x, y], [ -x**2 + 2*x*y - y**2, -x**3 - y**4 + 3*x*y])
         game = DifferentialGame()
         roots = game.find_roots(IntervalNewtonSolver(game.tolerance, game.max_steps), self.payoff_functions)
 
@@ -90,7 +89,7 @@ class main:
         for nash in max_nash_strategies:
             eval_p0 = inter.interval_evaluation(nash, inter.ari_intervals, 0)
             eval_p1 = inter.interval_evaluation(nash, inter.ari_intervals, 1)
-            print("{} is a Global Max".format(nash) if eval_p0[0] and eval_p1[0] else "{} is not a global max".format(nash))
+            print("{} is a Global Max".format(nash) if (all(eval_p0) and all(eval_p1)) else "{} is not a global max".format(nash))
         print()
 
         print("Showing the functionality by evaluating a point that is definitely not a global max:")
@@ -98,7 +97,7 @@ class main:
         for nn in not_nash:
             eval_p0 = inter.interval_evaluation(nn, inter.ari_intervals, 0)
             eval_p1 = inter.interval_evaluation(nn, inter.ari_intervals, 1)
-            print("{} is a Global Max".format(nn) if eval_p0[0] and eval_p1[0] else "{} is not a global max".format(nn))
+            print("{} is a Global Max".format(nn) if (all(eval_p0) and all(eval_p1)) else "{} is not a global max".format(nn))
 
 
 if __name__ == "__main__":

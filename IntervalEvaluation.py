@@ -45,7 +45,8 @@ class IntervalEvaluation:
                     deriv_payoff_range.upper_bound() < zero))  # no zero in the interval so f'(I) ≠ 0
                 condition3 = definitely(second_deriv_payoff_range.lower_bound() > FloatDPUpperBound(0, dp))
                 condition4 = definitely(payoff_range.lower_bound() > FloatDPUpperBound(payoff(nash), dp))
-                condition5 = definitely(second_deriv_payoff_range.upper_bound() < zero) and possibly(contains(interval, midpoint(interval_equilibrium)))
+                condition5 = definitely(second_deriv_payoff_range.upper_bound() < zero)
+                condition6 = possibly(contains(interval, midpoint(interval_equilibrium)))
 
                 if condition1 or condition2 or condition3:
                     # print("{} is a unique local max in {}".format(nash, interval))
@@ -54,12 +55,10 @@ class IntervalEvaluation:
                 if condition4:
                     return False  # print("{} is not a global Nash equilibrium".format(nash))
 
-                if condition5:
+                if condition5 and condition6:
                     # print("{} is a unique local max in {}".format(nash, interval))
                     results.append(True)
 
-        # if len(results) == 0:
-        #    results.extend(self.interval_evaluation(nash, self.split_intervals(self.intervals), player))
         if len(results) == 0:
             recursive_results = self.interval_evaluation(nash, self.split_intervals(self.intervals), player)
             if isinstance(recursive_results, bool):
